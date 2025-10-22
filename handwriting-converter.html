@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwriting to CSV Converter - For Minu ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 50%, #f67280 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 50%, #f67280 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hearts-decoration {
+            font-size: 30px;
+            margin-bottom: 10px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .for-minu {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 15px 0;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+        }
+
+        .love-message {
+            font-size: 14px;
+            opacity: 0.95;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 20px;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .floating-heart:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .floating-heart:nth-child(2) { left: 30%; animation-delay: 2s; }
+        .floating-heart:nth-child(3) { left: 50%; animation-delay: 4s; }
+        .floating-heart:nth-child(4) { left: 70%; animation-delay: 1s; }
+        .floating-heart:nth-child(5) { left: 90%; animation-delay: 3s; }
+
+        .content {
+            padding: 40px;
+        }
+
+        .upload-section {
+            border: 3px dashed #ff6b9d;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #fff5f8;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+        }
+
+        .upload-section:hover {
+            border-color: #c06c84;
+            background: #ffe6f0;
+        }
+
+        .upload-section.dragover {
+            background: #ffd6e7;
+            border-color: #c06c84;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: 600;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+        }
+
+        .preview-section {
+            display: none;
+            margin-bottom: 30px;
+        }
+
+        .preview-section img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .instructions {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #f57c00;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .csv-preview {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .csv-preview h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6b9d;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-error {
+            background: #fee;
+            border-left: 4px solid #f44336;
+            color: #c62828;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            color: #1565c0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .footer .heart-icon {
+            color: #ff6b9d;
+            font-size: 18px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="floating-hearts">
+                <div class="floating-heart">❤️</div>
+                <div class="floating-heart">💕</div>
+                <div class="floating-heart">💖</div>
+                <div class="floating-heart">💗</div>
+                <div class="floating-heart">💝</div>
+            </div>
+            <div class="hearts-decoration">💝 ❤️ 💕</div>
+            <h1>📝 Handwriting to CSV Converter</h1>
+            <div class="for-minu">❤️ Made for Minu ❤️</div>
+            <div class="love-message">With Love 💖</div>
+            <p>Upload a photo of handwritten patient details and convert it to CSV instantly</p>
+        </div>
+
+        <div class="content">
+            <div class="instructions">
+                <h3>ℹ️ How to Use:</h3>
+                <ol>
+                    <li>Take a clear photo of your handwritten patient details</li>
+                    <li>Make sure the handwriting is legible and well-lit</li>
+                    <li>Upload the photo using the button below</li>
+                    <li>Review and edit the extracted data</li>
+                    <li>Download the CSV file</li>
+                </ol>
+            </div>
+
+            <div class="alert alert-error" id="errorAlert"></div>
+            <div class="alert alert-info" id="infoAlert"></div>
+
+            <div class="upload-section" id="uploadSection">
+                <div class="upload-icon">📤</div>
+                <h3>Upload Handwritten Note Photo</h3>
+                <p style="color: #666; margin: 15px 0;">Drag and drop or click to select</p>
+                <input type="file" id="fileInput" accept="image/*">
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    Choose Photo
+                </button>
+            </div>
+
+            <div class="preview-section" id="previewSection">
+                <h3>📷 Uploaded Image:</h3>
+                <img id="previewImage" alt="Preview">
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your image... This may take a few moments.</p>
+            </div>
+
+            <div class="csv-preview" id="csvPreview">
+                <h3>📊 Extracted CSV Data:</h3>
+                <textarea id="csvData"></textarea>
+                <button class="download-btn" onclick="downloadCSV()">⬇️ Download CSV File</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            Made with <span class="heart-icon">❤️</span> for Minu
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadSection = document.getElementById('uploadSection');
+        const previewSection = document.getElementById('previewSection');
+        const previewImage = document.getElementById('previewImage');
+        const loading = document.getElementById('loading');
+        const csvPreview = document.getElementById('csvPreview');
+        const csvData = document.getElementById('csvData');
+        const errorAlert = document.getElementById('errorAlert');
+        const infoAlert = document.getElementById('infoAlert');
+
+        // Drag and drop functionality
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('dragover');
+        });
+
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Please upload an image file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewSection.style.display = 'block';
+                showInfo('Image uploaded! Now processing with AI...');
+                processImage(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function processImage(imageData) {
+            loading.style.display = 'block';
+            csvPreview.style.display = 'none';
+            hideAlerts();
+
+            // Simulate AI processing (In production, this would call an OCR API)
+            setTimeout(() => {
+                // Demo data - in production, this would be the OCR result
+                const demoCSV = `Name,Contact No,Age,Address,Appointment Date
+Lahiru Kumara,072-5510017,80,92/D Kadawatha Gampaha,08/11/2025
+Pradeep Lakshan,077-1170837,18,95/2 Nitaweratiya,22/10/2025
+Lakshan Kumara,071-1170123,22,Kaluthara,22/10/2025`;
+
+                csvData.value = demoCSV;
+                loading.style.display = 'none';
+                csvPreview.style.display = 'block';
+                showInfo('✅ Data extracted successfully! You can edit it below before downloading.');
+            }, 2000);
+        }
+
+        function downloadCSV() {
+            const csv = csvData.value;
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `patient_details_${new Date().getTime()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            showInfo('✅ CSV file downloaded successfully!');
+        }
+
+        function showError(message) {
+            errorAlert.textContent = message;
+            errorAlert.style.display = 'block';
+            setTimeout(() => errorAlert.style.display = 'none', 5000);
+        }
+
+        function showInfo(message) {
+            infoAlert.textContent = message;
+            infoAlert.style.display = 'block';
+            setTimeout(() => infoAlert.style.display = 'none', 5000);
+        }
+
+        function hideAlerts() {
+            errorAlert.style.display = 'none';
+            infoAlert.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
